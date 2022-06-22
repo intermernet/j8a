@@ -148,8 +148,6 @@ func handleHTTP(proxy *Proxy) {
 		}
 	}
 
-	//see if this makes a difference.
-	proxy.Dwn.Body = nil
 	proxy.Dwn = nil
 	proxy.Up = nil
 	proxy = nil
