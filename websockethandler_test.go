@@ -105,7 +105,7 @@ func mockProxyWS() Proxy {
 	return Proxy{
 		XRequestID:   "1",
 		XRequestInfo: false,
-		Up: Up{
+		Up: &Up{
 			Atmpt: &Atmpt{
 				URL: &URL{
 					Scheme: "ws",
@@ -114,7 +114,7 @@ func mockProxyWS() Proxy {
 				},
 			},
 		},
-		Dwn: Down{
+		Dwn: &Down{
 			Req: &http.Request{
 				RemoteAddr: "10.1.1.1",
 			},

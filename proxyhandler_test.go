@@ -570,7 +570,7 @@ func TestProxyHeaderRewrite(t *testing.T) {
 
 func TestJsonifyUpstreamHeadersWithEmptyUp(t *testing.T) {
 	res := jsonifyUpstreamHeaders(&Proxy{
-		Up: Up{},
+		Up: &Up{},
 	})
 
 	if string(res) != "{}" {
@@ -579,7 +579,10 @@ func TestJsonifyUpstreamHeadersWithEmptyUp(t *testing.T) {
 }
 
 func TestJsonifyUpstreamHeadersWithEmptyProxy(t *testing.T) {
-	res := jsonifyUpstreamHeaders(&Proxy{})
+	res := jsonifyUpstreamHeaders(&Proxy{
+		Up:  &Up{},
+		Dwn: &Down{},
+	})
 
 	if string(res) != "{}" {
 		t.Errorf("should have returned json object")
@@ -588,7 +591,7 @@ func TestJsonifyUpstreamHeadersWithEmptyProxy(t *testing.T) {
 
 func TestJsonifyUpstreamHeadersWithEmptyAtmpt(t *testing.T) {
 	res := jsonifyUpstreamHeaders(&Proxy{
-		Up: Up{
+		Up: &Up{
 			Atmpt: &Atmpt{},
 		},
 	})
@@ -600,7 +603,7 @@ func TestJsonifyUpstreamHeadersWithEmptyAtmpt(t *testing.T) {
 
 func TestJsonifyUpstreamHeadersWithNilHeaders(t *testing.T) {
 	res := jsonifyUpstreamHeaders(&Proxy{
-		Up: Up{
+		Up: &Up{
 			Atmpt: &Atmpt{
 				resp: &http.Response{
 					Header: nil,
@@ -618,7 +621,7 @@ func TestJsonifyUpstreamHeadersWithHeader(t *testing.T) {
 	h := http.Header{}
 	h.Add("K", "v")
 	res := jsonifyUpstreamHeaders(&Proxy{
-		Up: Up{
+		Up: &Up{
 			Atmpt: &Atmpt{
 				resp: &http.Response{
 					Header: h,

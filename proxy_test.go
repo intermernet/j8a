@@ -397,11 +397,11 @@ func TestAbortAllUpstreamAttempts(t *testing.T) {
 	proxy := Proxy{
 		XRequestID:   "",
 		XRequestInfo: false,
-		Up: Up{
+		Up: &Up{
 			Atmpts: []Atmpt{mockAtmpt()},
 			Atmpt:  &atmpt,
 		},
-		Dwn: Down{
+		Dwn: &Down{
 			Req:         nil,
 			Resp:        Resp{},
 			Method:      "",
@@ -452,7 +452,9 @@ func TestParseRequestBody(t *testing.T) {
 	req, _ := http.NewRequest("PUT", "/hello", bytes.NewReader(body))
 	req.ContentLength = int64(len(body))
 
-	proxy := Proxy{}
+	proxy := Proxy{
+		Dwn: &Down{},
+	}
 	proxy.Dwn.startDate = time.Now()
 	proxy.parseRequestBody(req)
 
@@ -469,7 +471,9 @@ func TestParseRequestBodyTooLarge(t *testing.T) {
 	req, _ := http.NewRequest("PUT", "/hello", nil)
 	req.ContentLength = 65536
 
-	proxy := Proxy{}
+	proxy := Proxy{
+		Dwn: &Down{},
+	}
 	proxy.Dwn.startDate = time.Now()
 	proxy.parseRequestBody(req)
 
@@ -955,7 +959,7 @@ func mockProxy(upBody []byte, cl string, path string, transform string, requestU
 
 	proxy := Proxy{
 		XRequestID: "12345",
-		Up: Up{
+		Up: &Up{
 			Atmpt: &Atmpt{
 				URL: &URL{
 					Scheme: "http",
@@ -970,7 +974,7 @@ func mockProxy(upBody []byte, cl string, path string, transform string, requestU
 				},
 			},
 		},
-		Dwn: Down{
+		Dwn: &Down{
 			URI:    requestUri,
 			Method: "HEAD",
 			Req:    req,

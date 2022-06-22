@@ -56,8 +56,11 @@ func proxyHandler(response http.ResponseWriter, request *http.Request, exec prox
 	matched := false
 
 	//preprocess incoming request in proxy object
-	proxy := new(Proxy).
-		setOutgoing(response).
+	proxy := &Proxy{
+		Dwn: &Down{},
+		Up:  &Up{},
+	}
+	proxy = proxy.setOutgoing(response).
 		parseIncoming(request)
 
 	//all malformed requests are rejected here and we return a 400
@@ -144,6 +147,8 @@ func handleHTTP(proxy *Proxy) {
 			}
 		}
 	}
+
+	proxy.Dwn.Body = nil
 }
 
 const upstreamURIResolved = "upstream URI resolved"

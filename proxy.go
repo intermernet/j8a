@@ -233,7 +233,7 @@ type Down struct {
 	URI            string
 	UserAgent      string
 	AcceptEncoding AcceptEncoding
-	Body           []byte
+	Body           *[]byte
 	Aborted        <-chan struct{}
 	AbortedFlag    bool
 	Timeout        <-chan struct{}
@@ -250,8 +250,8 @@ type Down struct {
 type Proxy struct {
 	XRequestID   string
 	XRequestInfo bool
-	Up           Up
-	Dwn          Down
+	Up           *Up
+	Dwn          *Down
 	Route        *Route
 }
 
@@ -340,7 +340,7 @@ Retry:
 }
 
 func (proxy *Proxy) hasMadeUpstreamAttempt() bool {
-	return proxy.Up.Atmpt != nil && proxy.Up.Atmpt.resp != nil
+	return proxy.Up != nil && proxy.Up.Atmpt != nil && proxy.Up.Atmpt.resp != nil
 }
 
 const headerParsed = "downstream request headers successfully parsed"
@@ -484,12 +484,12 @@ func (proxy *Proxy) parseRequestBody(request *http.Request) {
 			ev.Msgf(dwnBodyReadAbort, err)
 		}
 	} else {
-		proxy.Dwn.Body = buf
+		proxy.Dwn.Body = &buf
 		infoOrTraceEv(proxy).
 			Str(path, proxy.Dwn.Path).
 			Str(method, proxy.Dwn.Method).
 			Str(XRequestID, proxy.XRequestID).
-			Int(bodyBytes, len(proxy.Dwn.Body)).
+			Int(bodyBytes, len(*proxy.Dwn.Body)).
 			Int64(dwnElpsdMicros, time.Since(proxy.Dwn.startDate).Microseconds()).
 			Msgf(dwnBodyRead, n, request.ContentLength)
 	}
@@ -568,15 +568,17 @@ func createXRequestID(request *http.Request) string {
 }
 
 func (proxy *Proxy) setOutgoing(out http.ResponseWriter) *Proxy {
-	proxy.Dwn.Resp = Resp{
-		Writer: out,
+	proxy.Dwn = &Down{
+		Resp: Resp{
+			Writer: out,
+		},
 	}
 	return proxy
 }
 
 func (proxy Proxy) bodyReader() io.Reader {
-	if len(proxy.Dwn.Body) > 0 {
-		return bytes.NewReader(proxy.Dwn.Body)
+	if proxy.Dwn.Body != nil && len(*proxy.Dwn.Body) > 0 {
+		return bytes.NewReader(*proxy.Dwn.Body)
 	}
 	return nil
 }

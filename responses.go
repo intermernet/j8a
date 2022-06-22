@@ -151,9 +151,9 @@ func randomHuttese() string {
 }
 
 func aboutHandler(w http.ResponseWriter, r *http.Request) {
-	proxy := new(Proxy).
-		parseIncoming(r).
-		setOutgoing(w)
+	proxy := &Proxy{Dwn: &Down{}}
+	proxy = proxy.setOutgoing(w).
+		parseIncoming(r)
 
 	if !proxy.Dwn.AcceptEncoding.hasAtLeastOneValidEncoding() {
 		sendStatusCodeAsJSON(proxy.respondWith(406, formatInvalidAcceptEncoding()))

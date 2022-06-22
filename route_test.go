@@ -124,7 +124,7 @@ func TestRouteMapDefault(t *testing.T) {
 func TestRouteMap(t *testing.T) {
 	Runner = mockRuntime()
 	r := Runner.Routes[0]
-	gotUrl, gotLabel, got := r.mapURL(&Proxy{})
+	gotUrl, gotLabel, got := r.mapURL(&Proxy{Dwn: &Down{}})
 	if got != true {
 		t.Error("routes do not successfully map")
 	}
